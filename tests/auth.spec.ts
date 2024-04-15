@@ -1,32 +1,51 @@
-import { chromium, test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
-test.only('Open mail', async () => {
-  const browser = await chromium.launch({
-    headless: false
-  });
-  const context = await browser.newContext()
-  const page = await context.newPage();
-  await page.goto("https://mail.ru/");
+test.only('JPetStore', async ({page}) => {
 
-   // Click input[data-testid="username"
-   await page.click('input[data-testid="username"]');
+  await page.goto("https://jpetstore.aspectran.com/catalog/");
 
-   // Fill input[name="email"]
-   await page.fill('input[data-testid="username"]', '000');
+  const signInButton = page.getByText('Sign In');
+  await signInButton.click();
 
-   // Press Tab
-   await page.press('input[data-testid="username"]', 'Tab');
+  
+  const usernameField = page.locator('[name="username"]');
+  const passwordField = page.locator('[name="password"]');
+  const loginButton = page.locator('text="Login"');
+  await usernameField.fill('PetStoreAutotest');
+  await passwordField.fill('petpassword1405');
+  await loginButton.click();
 
-   // Fill input[data-testid="password"]
-   await page.fill('input[data-testid="password"]', '000');
+  const logoButton = page.locator('[src="/images/logo-topbar.gif"]');
+  await logoButton.click();
 
-   // Click button[data-testid="login"]
-   await page.click('button[data-testid="login"]')
-   await page.waitForTimeout(10000);
+  const imgcartButton = page.locator('[name="img_cart"]');
+  await imgcartButton.click();
+  
+  const MyOrdersButton = page.getByText('My Orders');
+  await MyOrdersButton.click();
+
+  const MyAccountButton = page.getByText('My Account');
+  await MyAccountButton.click();
+
+  await (page.locator('[href="/help.html"]')).click();
+
+  await page.goBack();
+
+  await (page.locator('[href="/categories/FISH"]')).click();
+  await (page.locator('[href="/categories/DOGS"]')).click();  
+  await (page.locator('[href="/categories/REPTILES"]')).click();
+  await (page.locator('[href="/categories/CATS"]')).click();
+  await (page.locator('[href="/categories/BIRDS"]')).click();
+
+  const signOutButton = page.getByText('Sign Out');
+  await signOutButton.click(); 
+
+ 
+   
   
   
   
   
   
-   await browser.close()
+ 
 })

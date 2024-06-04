@@ -1,64 +1,127 @@
 import { test, expect } from '@playwright/test';
+import { SignInPage } from '../pages/signinPage';
+import { JPetStorePage } from '../pages/jpetstorePage';
+import { CategoriesPage } from '../pages/categoriesPage';
+import { MyOrdersPage } from '../pages/myordersPage';
 
-test('JPetStore', async ({page}) => {
-
-  await page.goto("https://jpetstore.aspectran.com/catalog/");
-
-  const signInButton = page.getByText('Sign In');
-  await signInButton.click();
-
-  
-  const usernameField = page.locator('[name="username"]');
-  await expect(usernameField).toBeVisible();
-  const passwordField = page.locator('[name="password"]');
-  await expect(passwordField).toBeVisible();
-  const loginButton = page.locator('text="Login"');
-  await expect(loginButton).toBeVisible();
-  await usernameField.fill('PetStoreAutotest');
-  await passwordField.fill('petpassword1405');
-  await loginButton.click();
-  await expect.soft(signInButton).toBeHidden();
-  await expect.soft(loginButton).toBeHidden();
-
-  const logoButton = page.locator('[src="/images/logo-topbar.gif"]');  
-  await expect(logoButton).toBeVisible();
-  const imgcartButton = page.locator('[name="img_cart"]');
-  await expect(imgcartButton).toBeVisible();
-  const MyOrdersButton = page.locator('text="My Orders"');
-  await expect(MyOrdersButton).toBeVisible();
-  await expect(MyOrdersButton).toHaveCSS('color', 'rgb(234, 172, 0)');
-  const MyAccountButton = page.locator('text="My Account"');
-  await expect(MyAccountButton).toBeVisible();
-  await expect(MyAccountButton).toHaveCSS('color', 'rgb(234, 172, 0)');
-  const signOutButton = page.locator('text="Sign Out"');
-  await expect(signOutButton).toBeVisible();
-  await expect(signOutButton).toHaveCSS('color', 'rgb(234, 172, 0)');
-  const questionButton = page.locator('[href="/help.html"]');
-  await expect(questionButton).toBeVisible();
-
-
-  const fish = await page.locator('[href="/categories/FISH"]').nth(0);
-  await expect(fish).toBeVisible();
-  const dogs = await page.locator('[href="/categories/DOGS"]').nth(0); 
-  await expect(dogs).toBeVisible();
-  const reptiles = await page.locator('[href="/categories/REPTILES"]').nth(0);
-  await expect(reptiles).toBeVisible();
-  const cats = await page.locator('[href="/categories/CATS"]').nth(0)
-  await expect(cats).toBeVisible();
-  await expect(cats).toContainText('Cats');
-  await expect(cats).toHaveCSS('font-weight','400');
-  const birds = await page.locator('[href="/categories/BIRDS"]').nth(0);
-  await expect(birds).toBeVisible();
-
-  
-  
-
+let signInPage: SignInPage
+let jpetStorePage: JPetStorePage
+let categoriesPage: CategoriesPage
+let myOrdersPage: MyOrdersPage
  
-   
-  
-  
-  
-  
-  
+test.beforeEach(async({page})=>{
+  signInPage = new SignInPage(page)
+  jpetStorePage = new JPetStorePage(page)
+  categoriesPage = new CategoriesPage(page)
+  myOrdersPage = new MyOrdersPage(page)
+  await page.goto("https://jpetstore.aspectran.com/catalog/");
+})
+
+test.describe('Базовые проверки', async()=>{
+
+ test('JPetStore', async ({page}) => {
+
+  await signInPage.signInButton.click();
+  await expect(signInPage.usernameField).toBeVisible();
+  await expect(signInPage.passwordField).toBeVisible();
+  await expect(signInPage.loginButton).toBeVisible();
+  await signInPage.usernameField.fill('PetStoreAutotest');
+  await signInPage.passwordField.fill('petpassword1405');
+  await signInPage.loginButton.click();
+  await expect.soft(signInPage.signInButton).toBeHidden();
+  await expect.soft(signInPage.loginButton).toBeHidden();
+
+  await expect(jpetStorePage.logoButton).toBeVisible();
+  await expect(jpetStorePage.imgcartButton).toBeVisible();
+  await expect(jpetStorePage.MyOrdersButton).toBeVisible();
+  await expect(jpetStorePage.MyOrdersButton).toHaveCSS('color', 'rgb(234, 172, 0)');
+  await expect(jpetStorePage.MyAccountButton).toBeVisible();
+  await expect(jpetStorePage.MyAccountButton).toHaveCSS('color', 'rgb(234, 172, 0)');
+  await expect(jpetStorePage.signOutButton).toBeVisible();
+  await expect(jpetStorePage.signOutButton).toHaveCSS('color', 'rgb(234, 172, 0)');
+  await expect(jpetStorePage.questionButton).toBeVisible();
+
+  await expect(categoriesPage.fish).toBeVisible();
+  await expect(categoriesPage.dogs).toBeVisible();
+  await expect(categoriesPage.reptiles).toBeVisible();
+  await expect(categoriesPage.cats).toBeVisible();
+  await expect(categoriesPage.cats).toContainText('Cats');
+  await expect(categoriesPage.cats).toHaveCSS('font-weight','400');
+  await expect(categoriesPage.birds).toBeVisible();
  
 })
+})
+
+test.describe('Авторизация с невалидными данными', async()=>{
+
+  test('JPetStore', async ({page}) => {
+  
+    await signInPage.signInButton.click();
+    await expect(signInPage.usernameField).toBeVisible();
+    await expect(signInPage.passwordField).toBeVisible();
+    await expect(signInPage.loginButton).toBeVisible();
+    await signInPage.usernameField.fill('PetStore');
+    await signInPage.passwordField.fill('petpassword');
+    await signInPage.loginButton.click();
+    await expect(signInPage.loginButton).toBeVisible();
+    await expect.soft(signInPage.signInButton).toBeVisible();
+    await expect.soft(signInPage.panelFailed).toBeVisible();
+   
+  })
+  })
+
+test.describe('Авторизация с валидными данными', async()=>{
+
+ test('JPetStore', async ({page}) => {
+    
+  await signInPage.signInButton.click();
+  await expect(signInPage.usernameField).toBeVisible();
+  await expect(signInPage.passwordField).toBeVisible();
+  await expect(signInPage.loginButton).toBeVisible();
+  await signInPage.usernameField.fill('PetStoreAutotest');
+  await signInPage.passwordField.fill('petpassword1405');
+  await signInPage.loginButton.click();
+  await expect.soft(signInPage.signInButton).toBeHidden();
+  await expect.soft(signInPage.loginButton).toBeHidden();
+     
+    })
+    })
+
+test.describe('Нахождение продуктов через поле поиска', async()=>{
+
+ test('JPetStore', async ({page}) => {
+      
+    await expect(jpetStorePage.productSearch).toBeVisible();
+    await jpetStorePage.productSearch.click();
+    await jpetStorePage.productSearch.fill('Goldfish');
+    await expect(jpetStorePage.SearchButton).toBeVisible();
+    await jpetStorePage.SearchButton.click();  
+    await expect(jpetStorePage.goldfishProduct).toBeVisible();
+     
+ })
+ })
+
+ test.describe('Переход в список заказов и просмотр списка', async()=>{
+
+  test('JPetStore', async ({page}) => {
+
+    await signInPage.signInButton.click();
+    await expect(signInPage.usernameField).toBeVisible();
+    await expect(signInPage.passwordField).toBeVisible();
+    await expect(signInPage.loginButton).toBeVisible();
+    await signInPage.usernameField.fill('PetStoreAutotest');
+    await signInPage.passwordField.fill('petpassword1405');
+    await signInPage.loginButton.click();
+    await expect.soft(signInPage.signInButton).toBeHidden();
+    await expect.soft(signInPage.loginButton).toBeHidden();
+
+    await expect(jpetStorePage.MyOrdersButton).toBeVisible();
+    await jpetStorePage.MyOrdersButton.click();
+      
+    await expect(myOrdersPage.orderidTable).toBeVisible();
+    await expect(myOrdersPage.dateTable).toBeVisible();
+    await expect(myOrdersPage.totalpriceTable).toBeVisible();
+    await expect(myOrdersPage.firstOrder).toBeVisible();
+      
+  })
+  })
